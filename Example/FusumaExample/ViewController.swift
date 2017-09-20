@@ -35,15 +35,20 @@ class ViewController: UIViewController, FusumaDelegate {
     
     @IBAction func showButtonPressed(_ sender: AnyObject) {
         
-        // Show Fusuma
         let fusuma = FusumaViewController()
         
         fusuma.delegate = self
         fusuma.cropHeightRatio = 1.0
-        fusuma.allowMultipleSelection = true
-//        fusuma.availableModes = [.video]
-        fusumaSavesImage = true
-
+        fusuma.allowMultipleSelection = false
+        fusumaCropImage = true
+        fusumaCircularImage = true
+        fusuma.availableModes = [.camera, .library]
+        fusumaTabFont =  UIFont(name: "Farah", size: 13)
+        fusumaBaseTintColor = UIColor(red: 255, green: 255, blue: 255, alpha: 0.5)
+        fusumaTintColor = UIColor(red: 255, green: 255, blue: 255, alpha: 1)
+        fusumaBackgroundColor = UIColor.black
+        fusumaSavesImage = false
+        
         self.present(fusuma, animated: true, completion: nil)
     }
     
@@ -119,6 +124,34 @@ class ViewController: UIViewController, FusumaDelegate {
         
             print("Called just after dismissed FusumaViewController")
         }
+    }
+    
+    func fusumaCameraUnauthorized() {
+        print("Camera unauthorized")
+        
+        let alert = UIAlertController(title: "Access Requested",
+                                      message: "The app cant access your camera, please go to setting to enable it.",
+                                      preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "Settings", style: .default) { (action) -> Void in
+            
+            if let url = URL(string:UIApplicationOpenSettingsURLString) {
+                
+                UIApplication.shared.openURL(url)
+            }
+        })
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel) { (action) -> Void in
+            
+        })
+        
+        guard let vc = UIApplication.shared.delegate?.window??.rootViewController,
+            let presented = vc.presentedViewController else {
+                
+                return
+        }
+        
+        presented.present(alert, animated: true, completion: nil)
     }
     
     func fusumaCameraRollUnauthorized() {

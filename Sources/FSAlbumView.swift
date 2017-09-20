@@ -15,6 +15,7 @@ import Photos
 
     func albumViewCameraRollUnauthorized()
     func albumViewCameraRollAuthorized()
+    func albumViewCameraRollFinished()
 }
 
 final class FSAlbumView: UIView, UICollectionViewDataSource, UICollectionViewDelegate, PHPhotoLibraryChangeObserver, UIGestureRecognizerDelegate {
@@ -22,12 +23,15 @@ final class FSAlbumView: UIView, UICollectionViewDataSource, UICollectionViewDel
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var imageCropView: FSImageCropView!
     @IBOutlet weak var imageCropViewContainer: UIView!
+    @IBOutlet weak var useButtonForPhotoRoll: UIButton!
     
+    @IBOutlet weak var noImagLabel: UILabel!
     @IBOutlet weak var collectionViewConstraintHeight: NSLayoutConstraint!
     @IBOutlet weak var imageCropViewConstraintTop: NSLayoutConstraint!
 
     weak var delegate: FSAlbumViewDelegate? = nil
     var allowMultipleSelection = false
+    var circularImage: Bool  = false
     
     fileprivate var images: PHFetchResult<PHAsset>!
     fileprivate var imageManager: PHCachingImageManager?
@@ -49,9 +53,11 @@ final class FSAlbumView: UIView, UICollectionViewDataSource, UICollectionViewDel
     
     fileprivate var dragDirection = Direction.up
 
-    private let imageCropViewOriginalConstraintTop: CGFloat = 50
+    private let imageCropViewOriginalConstraintTop: CGFloat = 0
     private let imageCropViewMinimalVisibleHeight: CGFloat  = 100
     private var imaginaryCollectionViewOffsetStartPosY: CGFloat = 0.0
+    
+    private var initialized = false
     
     private var cropBottomY: CGFloat  = 0.0
     private var dragStartPos: CGPoint = CGPoint.zero
@@ -87,7 +93,7 @@ final class FSAlbumView: UIView, UICollectionViewDataSource, UICollectionViewDel
         self.addGestureRecognizer(panGesture)
         
         collectionViewConstraintHeight.constant = self.frame.height - imageCropViewContainer.frame.height - imageCropViewOriginalConstraintTop
-        imageCropViewConstraintTop.constant = 50
+        imageCropViewConstraintTop.constant = 0
         dragDirection = Direction.up
         
         imageCropViewContainer.layer.shadowColor   = UIColor.black.cgColor
@@ -99,8 +105,22 @@ final class FSAlbumView: UIView, UICollectionViewDataSource, UICollectionViewDel
 		collectionView.backgroundColor = fusumaBackgroundColor
         collectionView.allowsMultipleSelection = allowMultipleSelection
         
-        // Never load photos Unless the user allows to access to photo album
-        checkPhotoAuth()
+        // adding circle
+        if (circularImage) {
+            let radius = imageCropViewContainer.frame.size.width
+            let path = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: imageCropViewContainer.bounds.size.width, height: imageCropViewContainer.bounds.size.height), cornerRadius: 0)
+            let circlePath = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: radius, height: radius), cornerRadius: radius/2)
+            path.append(circlePath)
+            path.usesEvenOddFillRule = true
+            
+            let fillLayer = CAShapeLayer()
+            fillLayer.path = path.cgPath
+            fillLayer.fillRule = kCAFillRuleEvenOdd
+            fillLayer.fillColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5).cgColor
+            fillLayer.opacity = 0.5
+            imageCropViewContainer.layer.addSublayer(fillLayer)
+        }
+        
         
         // Sorting condition
         let options = PHFetchOptions()
@@ -115,10 +135,39 @@ final class FSAlbumView: UIView, UICollectionViewDataSource, UICollectionViewDel
             changeImage(images[0])
             collectionView.reloadData()
             collectionView.selectItem(at: IndexPath(row: 0, section: 0), animated: false, scrollPosition: UICollectionViewScrollPosition())
+        } else if images.count == 0 {
+            noImagLabel.isHidden = false
+            useButtonForPhotoRoll.isHidden = true
         }
         
         PHPhotoLibrary.shared().register(self)
         
+        // Check the status of authorization for PHPhotoLibrary
+        performCheckPhotoAuth(shouldInitialize: true)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(FSAlbumView.checkIfNewIMagesHasAppeared(_:)), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
+    }
+    
+    func checkIfNewIMagesHasAppeared(_ notification: Notification){
+        let options = PHFetchOptions()
+        options.sortDescriptors = [
+            NSSortDescriptor(key: "creationDate", ascending: false)
+        ]
+        
+        images = PHAsset.fetchAssets(with: .image, options: options)
+        
+        if images.count > 0 {
+            changeImage(images[0])
+            collectionView.reloadData()
+            collectionView.selectItem(at: IndexPath(row: 0, section: 0), animated: false, scrollPosition: UICollectionViewScrollPosition())
+            noImagLabel.isHidden = true
+            useButtonForPhotoRoll.isHidden = false
+        } else if images.count == 0 {
+            noImagLabel.isHidden = false
+            useButtonForPhotoRoll.isHidden = true
+            imageCropView.image = nil
+            collectionView.reloadData()
+        }
     }
     
     deinit {
@@ -127,6 +176,51 @@ final class FSAlbumView: UIView, UICollectionViewDataSource, UICollectionViewDel
             
             PHPhotoLibrary.shared().unregisterChangeObserver(self)
         }
+    }
+ 
+    // Check the status of authorization for PHPhotoLibrary
+    func performCheckPhotoAuth(shouldInitialize: Bool) {
+        
+        PHPhotoLibrary.requestAuthorization { [weak self] (status) -> Void in
+            guard let this = self else {
+                print("unable to perform checkPhotoAuth")
+                return
+            }
+            switch status {
+                
+            case .authorized:
+                
+                if(shouldInitialize){
+                    this.imageManager = PHCachingImageManager()
+                    
+                    if let images = this.images, images.count > 0 {
+                        
+                        this.changeImage(images[0])
+                    }
+                }
+                DispatchQueue.main.async {
+                    
+                    this.delegate?.albumViewCameraRollAuthorized()
+                }
+                
+            case .restricted, .denied:
+                this.useButtonForPhotoRoll.isHidden = true
+                if(!shouldInitialize){
+                    DispatchQueue.main.async(execute: { () -> Void in
+                        this.delegate?.albumViewCameraRollUnauthorized()
+                    })
+                }
+                break
+                
+            default:
+                
+                break
+            }
+        }
+    }
+    
+    @IBAction func userApprovedImageButtonPressed(_ sender: Any) {
+        self.delegate?.albumViewCameraRollFinished()
     }
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
@@ -470,29 +564,32 @@ private extension FSAlbumView {
     // Check the status of authorization for PHPhotoLibrary
     func checkPhotoAuth() {
         
-        PHPhotoLibrary.requestAuthorization { (status) -> Void in
-            
+        PHPhotoLibrary.requestAuthorization { [weak self] (status) -> Void in
+            guard let this = self else {
+                print("unable to perform checkPhotoAuth")
+                return
+            }
             switch status {
                 
             case .authorized:
-            
-                self.imageManager = PHCachingImageManager()
                 
-                if let images = self.images, images.count > 0 {
+                this.imageManager = PHCachingImageManager()
+                
+                if let images = this.images, images.count > 0 {
                     
-                    self.changeImage(images[0])
+                    this.changeImage(images[0])
                 }
                 
                 DispatchQueue.main.async {
                     
-                    self.delegate?.albumViewCameraRollAuthorized()
+                    this.delegate?.albumViewCameraRollAuthorized()
                 }
                 
             case .restricted, .denied:
                 
                 DispatchQueue.main.async(execute: { () -> Void in
                     
-                    self.delegate?.albumViewCameraRollUnauthorized()
+                    this.delegate?.albumViewCameraRollUnauthorized()
                 })
                 
             default:
@@ -501,6 +598,7 @@ private extension FSAlbumView {
             }
         }
     }
+    
 
     // MARK: - Asset Caching
     

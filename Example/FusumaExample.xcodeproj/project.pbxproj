@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0D0E05CB1F726EA200E64EA2 /* UIIMageExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D0E05CA1F726EA200E64EA2 /* UIIMageExtensions.swift */; };
 		52412AC41CA61C9F0073C4BE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52412AC31CA61C9F0073C4BE /* AppDelegate.swift */; };
 		52412AC61CA61C9F0073C4BE /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52412AC51CA61C9F0073C4BE /* ViewController.swift */; };
 		52412AC91CA61C9F0073C4BE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 52412AC71CA61C9F0073C4BE /* Main.storyboard */; };
@@ -28,6 +29,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0D0E05CA1F726EA200E64EA2 /* UIIMageExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIIMageExtensions.swift; sourceTree = "<group>"; };
 		52412AC01CA61C9F0073C4BE /* FusumaExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FusumaExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		52412AC31CA61C9F0073C4BE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		52412AC51CA61C9F0073C4BE /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -107,6 +109,7 @@
 				D77CA2981CBBDEB300C4BAC4 /* FusumaViewController.xib */,
 				EDDC0B401D04FA14009135DB /* FSVideoCameraView.swift */,
 				EDDC0B411D04FA14009135DB /* FSVideoCameraView.xib */,
+				0D0E05CA1F726EA200E64EA2 /* UIIMageExtensions.swift */,
 			);
 			name = Sources;
 			path = ../../Sources;
@@ -144,6 +147,7 @@
 				TargetAttributes = {
 					52412ABF1CA61C9F0073C4BE = {
 						CreatedOnToolsVersion = 7.3;
+						DevelopmentTeam = YDA447S8C8;
 					};
 				};
 			};
@@ -190,6 +194,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				52412AC61CA61C9F0073C4BE /* ViewController.swift in Sources */,
+				0D0E05CB1F726EA200E64EA2 /* UIIMageExtensions.swift in Sources */,
 				EDDC0B421D04FA14009135DB /* FSVideoCameraView.swift in Sources */,
 				D77CA29E1CBBDEB300C4BAC4 /* FSCameraView.swift in Sources */,
 				D77CA29C1CBBDEB300C4BAC4 /* FSAlbumViewCell.swift in Sources */,
@@ -319,6 +324,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = YDA447S8C8;
 				INFOPLIST_FILE = FusumaExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				ONLY_ACTIVE_ARCH = YES;
@@ -332,6 +338,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = YDA447S8C8;
 				INFOPLIST_FILE = FusumaExample/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = me.ytakzk.FusumaExample;
