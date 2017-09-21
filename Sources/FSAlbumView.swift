@@ -32,6 +32,7 @@ final class FSAlbumView: UIView, UICollectionViewDataSource, UICollectionViewDel
     weak var delegate: FSAlbumViewDelegate? = nil
     var allowMultipleSelection = false
     var circularImage: Bool  = false
+    var canPanDuringThisTouch = true
     
     fileprivate var images: PHFetchResult<PHAsset>!
     fileprivate var imageManager: PHCachingImageManager?
@@ -231,8 +232,10 @@ final class FSAlbumView: UIView, UICollectionViewDataSource, UICollectionViewDel
             let loc     = sender.location(in: view)
             let subview = view?.hitTest(loc, with: nil)
             
+            
             if subview == imageCropView && imageCropViewConstraintTop.constant == imageCropViewOriginalConstraintTop {
-                
+                // if the pan starts in the image field, don't let this touch start dragging the album, since it's a crop gesture
+                canPanDuringThisTouch = false
                 return
             }
             
@@ -261,6 +264,10 @@ final class FSAlbumView: UIView, UICollectionViewDataSource, UICollectionViewDel
             
         } else if sender.state == UIGestureRecognizerState.changed {
             
+            if canPanDuringThisTouch == false {
+                return
+            }
+            
             let currentPos = sender.location(in: self)
             
             if dragDirection == Direction.up && currentPos.y < cropBottomY - dragDiff {
@@ -288,6 +295,8 @@ final class FSAlbumView: UIView, UICollectionViewDataSource, UICollectionViewDel
             }
             
         } else {
+            
+            canPanDuringThisTouch = true // reset this value for the next interaction
             
             imaginaryCollectionViewOffsetStartPosY = 0.0
             
