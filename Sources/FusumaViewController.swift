@@ -76,6 +76,8 @@ public var fusumaCircularImage: Bool  = false
 public var fusumaCameraRollTitle = "Library"
 public var fusumaCameraTitle     = "Photo"
 public var fusumaVideoTitle      = "Video"
+public var fusumaCloseTitle      = "Close"
+public var fusaumaTitle         = ""
 public var fusumaUseCameraRollImageTitle = "USE IMAGE"
 public var fusumaTitleFont       = UIFont(name: "AvenirNext-DemiBold", size: 15)
 public var fusumaTabFont         = UIFont(name: "AvenirNext-DemiBold", size: 15)
@@ -109,7 +111,10 @@ public struct ImageMetadata {
 
     public var cropHeightRatio: CGFloat = 1
     public var allowMultipleSelection: Bool = false
-
+    public var shouldDisplayTopBar = false
+    public var topBarTintColor = UIColor.white
+    public var topBarCloseButtonFont = UIFont(name: "Farah", size: 13)
+    
     fileprivate var mode: FusumaMode = .library
     
     public var availableModes: [FusumaMode] = [.library, .camera]
@@ -117,6 +122,10 @@ public struct ImageMetadata {
     @IBOutlet weak var photoLibraryViewerContainer: UIView!
     @IBOutlet weak var cameraShotContainer: UIView!
     @IBOutlet weak var videoShotContainer: UIView!
+    @IBOutlet weak var topBarView: UIView!
+    @IBOutlet weak var topBarTitle: UILabel!
+    @IBOutlet weak var topBarHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var topBarCloseButton: UIButton!
 
     @IBOutlet weak var libraryButton: UIButton!
     @IBOutlet weak var cameraButton: UIButton!
@@ -158,6 +167,19 @@ public struct ImageMetadata {
             libraryButton.titleLabel?.font = fusumaTabFont
             cameraButton.titleLabel?.font = fusumaTabFont
             videoButton.titleLabel?.font = fusumaTabFont
+        }
+        
+        if(shouldDisplayTopBar){
+            topBarHeightConstraint.constant = 64
+            topBarTitle.text = fusaumaTitle
+            topBarView.backgroundColor = topBarTintColor
+            topBarCloseButton.setTitle(fusumaCloseTitle, for: .normal)
+            topBarCloseButton.setTitleColor(fusumaTintColor, for: .normal)
+            topBarCloseButton.titleLabel?.font = topBarCloseButtonFont
+        } else {
+            topBarTitle.removeFromSuperview()
+            topBarHeightConstraint.constant = 0
+            topBarView.isHidden = true
         }
 
         albumView.allowMultipleSelection = allowMultipleSelection
@@ -328,6 +350,10 @@ public struct ImageMetadata {
     override public var prefersStatusBarHidden : Bool {
         
         return true
+    }
+    
+    @IBAction func closeButtonPressed(_ sender: Any) {
+        self.dismiss(animated: true, completion: nil)
     }
     
     

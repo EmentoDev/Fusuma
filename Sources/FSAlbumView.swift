@@ -96,11 +96,6 @@ final class FSAlbumView: UIView, UICollectionViewDataSource, UICollectionViewDel
         imageCropViewConstraintTop.constant = 0
         dragDirection = Direction.up
         
-        imageCropViewContainer.layer.shadowColor   = UIColor.black.cgColor
-        imageCropViewContainer.layer.shadowRadius  = 30.0
-        imageCropViewContainer.layer.shadowOpacity = 0.9
-        imageCropViewContainer.layer.shadowOffset  = CGSize.zero
-        
         collectionView.register(UINib(nibName: "FSAlbumViewCell", bundle: Bundle(for: self.classForCoder)), forCellWithReuseIdentifier: "FSAlbumViewCell")
 		collectionView.backgroundColor = fusumaBackgroundColor
         collectionView.allowsMultipleSelection = allowMultipleSelection

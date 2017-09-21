@@ -43,6 +43,9 @@ class ViewController: UIViewController, FusumaDelegate {
         fusumaCropImage = true
         fusumaCircularImage = true
         fusuma.availableModes = [.camera, .library]
+        fusuma.shouldDisplayTopBar = true
+        fusuma.topBarTintColor = UIColor(red: 44.0/255.0, green: 44.0/255.0, blue: 44.0/255.0, alpha: 1.0)
+        fusumaCloseTitle = "Annuller"
         fusumaTabFont =  UIFont(name: "Farah", size: 13)
         fusumaBaseTintColor = UIColor(red: 255, green: 255, blue: 255, alpha: 0.5)
         fusumaTintColor = UIColor(red: 255, green: 255, blue: 255, alpha: 1)
