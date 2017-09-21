@@ -36,8 +36,8 @@ public protocol FusumaDelegate: class {
     func fusumaImageSelected(_ image: UIImage, source: FusumaMode)
     func fusumaMultipleImageSelected(_ images: [UIImage], source: FusumaMode)
     func fusumaVideoCompleted(withFileURL fileURL: URL)
-    func fusumaCameraRollUnauthorized()
-    func fusumaCameraUnauthorized()
+    func fusumaCameraRollUnauthorized(_ fusumaViewController: FusumaViewController)
+    func fusumaCameraUnauthorized(_ fusumaViewController: FusumaViewController)
     
     // optional
     func fusumaImageSelected(_ image: UIImage, source: FusumaMode, metaData: ImageMetadata)
@@ -512,7 +512,7 @@ extension FusumaViewController: FSAlbumViewDelegate, FSCameraViewDelegate, FSVid
     }
     
     func cameraUnauthorized() {
-        delegate?.fusumaCameraUnauthorized()
+        delegate?.fusumaCameraUnauthorized(self)
     }
     
     public func albumViewCameraRollAuthorized() {
@@ -526,7 +526,7 @@ extension FusumaViewController: FSAlbumViewDelegate, FSCameraViewDelegate, FSVid
     public func albumViewCameraRollUnauthorized() {
         
         self.updateDoneButtonVisibility()
-        delegate?.fusumaCameraRollUnauthorized()
+        delegate?.fusumaCameraRollUnauthorized(self)
     }
     
     public func albumViewCameraRollFinished() {

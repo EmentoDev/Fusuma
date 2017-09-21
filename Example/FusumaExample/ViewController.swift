@@ -130,7 +130,7 @@ class ViewController: UIViewController, FusumaDelegate {
         }
     }
     
-    func fusumaCameraUnauthorized() {
+    func fusumaCameraUnauthorized(_ fusumaViewController: FusumaViewController) {
         print("Camera unauthorized")
         
         let alert = UIAlertController(title: "Access Requested",
@@ -149,16 +149,10 @@ class ViewController: UIViewController, FusumaDelegate {
             
         })
         
-        guard let vc = UIApplication.shared.delegate?.window??.rootViewController,
-            let presented = vc.presentedViewController else {
-                
-                return
-        }
-        
-        presented.present(alert, animated: true, completion: nil)
+        fusumaViewController.present(alert, animated: true, completion: nil)
     }
     
-    func fusumaCameraRollUnauthorized() {
+    func fusumaCameraRollUnauthorized(_ fusumaViewController: FusumaViewController)  {
         
         print("Camera roll unauthorized")
         
@@ -178,13 +172,7 @@ class ViewController: UIViewController, FusumaDelegate {
             
         })
 
-        guard let vc = UIApplication.shared.delegate?.window??.rootViewController,
-            let presented = vc.presentedViewController else {
-            
-            return
-        }
-        
-        presented.present(alert, animated: true, completion: nil)
+        fusumaViewController.present(alert, animated: true, completion: nil)
     }
     
     func fusumaClosed() {
