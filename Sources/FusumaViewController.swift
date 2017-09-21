@@ -72,6 +72,7 @@ public var fusumaVideoStopImage: UIImage?
 public var fusumaCropImage: Bool  = true
 public var fusumaSavesImage: Bool = false
 public var fusumaCircularImage: Bool  = false
+public var fusumaShouldAddSpaceForStatusBar = false
 
 public var fusumaCameraRollTitle = "Library"
 public var fusumaCameraTitle     = "Photo"
@@ -125,6 +126,7 @@ public struct ImageMetadata {
     @IBOutlet weak var topBarView: UIView!
     @IBOutlet weak var topBarTitle: UILabel!
     @IBOutlet weak var topBarHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var topBarOffsetConstraint: NSLayoutConstraint!
     @IBOutlet weak var topBarCloseButton: UIButton!
 
     @IBOutlet weak var libraryButton: UIButton!
@@ -170,7 +172,8 @@ public struct ImageMetadata {
         }
         
         if(shouldDisplayTopBar){
-            topBarHeightConstraint.constant = 64
+            topBarHeightConstraint.constant = fusumaShouldAddSpaceForStatusBar ? 84 : 64
+            if(fusumaShouldAddSpaceForStatusBar) { topBarOffsetConstraint.constant = 20 }
             topBarTitle.text = fusaumaTitle
             topBarView.backgroundColor = topBarTintColor
             topBarCloseButton.setTitle(fusumaCloseTitle, for: .normal)

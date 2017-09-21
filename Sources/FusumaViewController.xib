@@ -19,6 +19,7 @@
                 <outlet property="photoLibraryViewerContainer" destination="1Pk-29-mUG" id="buU-Cs-7qz"/>
                 <outlet property="topBarCloseButton" destination="HGN-dT-EzG" id="FsK-z2-698"/>
                 <outlet property="topBarHeightConstraint" destination="Yb4-Hj-T9A" id="oRd-zQ-rM2"/>
+                <outlet property="topBarOffsetConstraint" destination="I5h-k3-uSM" id="cFR-0Z-GW7"/>
                 <outlet property="topBarTitle" destination="kGv-jf-vKw" id="Rze-b9-UH1"/>
                 <outlet property="topBarView" destination="Upf-gP-a8f" id="ohe-MH-7LT"/>
                 <outlet property="videoButton" destination="8ew-Zi-63G" id="PFn-Tm-KwS"/>
