@@ -186,6 +186,8 @@ final class FSCameraView: UIView, UIGestureRecognizerDelegate {
         case .denied, .restricted:
             
             stopCamera()
+            self.approveViewContainer.isUserInteractionEnabled = false
+            self.buttonPanelContainer.isUserInteractionEnabled = false
             self.delegate?.cameraUnauthorized()
             
         default:
