@@ -625,22 +625,22 @@ private extension FusumaViewController {
     
     func dishighlightButtons() {
         
-        cameraButton.setTitleColor(fusumaBaseTintColor, for: .normal)
+        cameraButton.setTitleColor(UIColor(red: 255.0/255.0, green: 255.0/255.0, blue: 255.0/255.0, alpha: self.mode == .camera ? 1.0 : 0.5), for: .normal)
         
         if let libraryButton = libraryButton {
             
-            libraryButton.setTitleColor(fusumaBaseTintColor, for: .normal)
+            libraryButton.setTitleColor(UIColor(red: 255.0/255.0, green: 255.0/255.0, blue: 255.0/255.0, alpha: 0.5), for: .normal)
         }
         
         if let videoButton = videoButton {
             
-            videoButton.setTitleColor(fusumaBaseTintColor, for: .normal)
+            videoButton.setTitleColor(UIColor(red: 255.0/255.0, green: 255.0/255.0, blue: 255.0/255.0, alpha: 0.5), for: .normal)
         }
     }
     
     func highlightButton(_ button: UIButton) {
         
-        button.setTitleColor(fusumaTintColor, for: .normal)
+        button.setTitleColor(UIColor(red: 255.0/255.0, green: 255.0/255.0, blue: 255.0/255.0, alpha: 1.0), for: .normal)
     }
     
     func getTabButton(mode: FusumaMode) -> UIButton {
