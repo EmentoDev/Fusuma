@@ -54,34 +54,6 @@ public extension FusumaDelegate {
     func fusumaWillClosed() {}
 }
 
-public var fusumaBaseTintColor   = UIColor.hex("#c9c7c8", alpha: 1.0)
-public var fusumaTintColor       = UIColor.hex("#424141", alpha: 1.0)
-public var fusumaTriggerTintColor : UIColor?
-public var fusumaBackgroundColor = UIColor.hex("#FCFCFC", alpha: 1.0)
-
-public var fusumaCheckImage: UIImage?
-public var fusumaCloseImage: UIImage?
-public var fusumaFlashOnImage: UIImage?
-public var fusumaFlashOffImage: UIImage?
-public var fusumaFlipImage: UIImage?
-public var fusumaShotImage: UIImage?
-
-public var fusumaVideoStartImage: UIImage?
-public var fusumaVideoStopImage: UIImage?
-
-public var fusumaCropImage: Bool  = true
-public var fusumaSavesImage: Bool = false
-public var fusumaCircularImage: Bool  = false
-public var fusumaShouldAddSpaceForStatusBar = false
-
-public var fusumaCameraRollTitle = "Library"
-public var fusumaCameraTitle     = "Photo"
-public var fusumaVideoTitle      = "Video"
-public var fusumaCloseTitle      = "Close"
-public var fusaumaTitle         = ""
-public var fusumaUseCameraRollImageTitle = "USE IMAGE"
-public var fusumaTitleFont       = UIFont(name: "AvenirNext-DemiBold", size: 15)
-public var fusumaTabFont         = UIFont(name: "AvenirNext-DemiBold", size: 15)
 
 @objc public enum FusumaMode: Int {
     
@@ -115,6 +87,35 @@ public struct ImageMetadata {
     public var shouldDisplayTopBar = false
     public var topBarTintColor = UIColor.white
     public var topBarCloseButtonFont = UIFont(name: "Farah", size: 13)
+    
+    public var fusumaBaseTintColor   = UIColor.hex("#c9c7c8", alpha: 1.0)
+    public var fusumaTintColor       = UIColor.hex("#424141", alpha: 1.0)
+    public var fusumaTriggerTintColor : UIColor?
+    public var fusumaBackgroundColor = UIColor.hex("#FCFCFC", alpha: 1.0)
+    
+    public var fusumaCheckImage: UIImage?
+    public var fusumaCloseImage: UIImage?
+    public var fusumaFlashOnImage: UIImage?
+    public var fusumaFlashOffImage: UIImage?
+    public var fusumaFlipImage: UIImage?
+    public var fusumaShotImage: UIImage?
+    
+    public var fusumaVideoStartImage: UIImage?
+    public var fusumaVideoStopImage: UIImage?
+    
+    public var fusumaCropImage: Bool  = true
+    public var fusumaSavesImage: Bool = false
+    public var fusumaCircularImage: Bool  = false
+    public var fusumaShouldAddSpaceForStatusBar = false
+    
+    public var fusumaCameraRollTitle = "Library"
+    public var fusumaCameraTitle     = "Photo"
+    public var fusumaVideoTitle      = "Video"
+    public var fusumaCloseTitle      = "Close"
+    public var fusaumaTitle         = ""
+    public var fusumaUseCameraRollImageTitle = "USE IMAGE"
+    public var fusumaTitleFont       = UIFont(name: "AvenirNext-DemiBold", size: 15)
+    public var fusumaTabFont         = UIFont(name: "AvenirNext-DemiBold", size: 15)
     
     fileprivate var mode: FusumaMode = .library
     
