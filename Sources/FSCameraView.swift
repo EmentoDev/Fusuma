@@ -84,7 +84,7 @@ final class FSCameraView: UIView, UIGestureRecognizerDelegate {
         for device in AVCaptureDevice.devices() {
             
             if let device = device as? AVCaptureDevice,
-                device.position == AVCaptureDevicePosition.back {
+                device.position == FusumaShared.shared.fusumaCameraDirection{
                 
                 self.device = device
                 
@@ -156,13 +156,28 @@ final class FSCameraView: UIView, UIGestureRecognizerDelegate {
     deinit {
         
         NotificationCenter.default.removeObserver(self)
+        self.finalImage = nil
     }
     
     func startCamera() {
         
+        if (self.finalImage != nil) { return }
+        
+        UIView.animate(withDuration: 0.1, delay: 0.0, options: .curveEaseOut,
+                       animations: {self.approveViewContainer.alpha = 0},
+                       completion: { _ in
+                        self.approveViewContainer.isHidden = true
+                        self.buttonPanelContainer.isHidden = false
+                        UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveEaseIn,
+                                       animations: {self.buttonPanelContainer.alpha = 1},
+                                       completion: nil)
+        })
+        
         switch AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo) {
             
         case .authorized:
+            
+            session?.commitConfiguration()
             
             session?.startRunning()
             
@@ -233,42 +248,23 @@ final class FSCameraView: UIView, UIGestureRecognizerDelegate {
         
     }
     
+    func approveViewEnabled(_ enabled: Bool) {
+        flipButton.isEnabled = !enabled
+        shotButton.isEnabled = !enabled
+        flashButton.isEnabled = !enabled
+        takeNewImageButton.isEnabled = enabled
+        UseImageThatWasTakenButton.isEnabled = enabled
+    }
+    
     @IBOutlet weak var takeNewImageButton: UIButton!
     @IBAction func takeANewImage(_ sender: Any) {
-        self.buttonPanelContainer.isUserInteractionEnabled = true
-        self.approveViewContainer.isUserInteractionEnabled = false
-        NotificationCenter.default.addObserver(forName: .AVCaptureSessionDidStartRunning, object: nil, queue: OperationQueue.main) { _ in
-            UIView.animate(withDuration: 0.1, delay: 0.0, options: .curveEaseOut,
-                           animations: {self.approveViewContainer.alpha = 0},
-                           completion: { _ in
-                            self.approveViewContainer.isHidden = true
-                            self.buttonPanelContainer.isHidden = false
-                            UIView.animate(withDuration: 0.2, delay: 0.0, options: .curveEaseIn,
-                                           animations: {self.buttonPanelContainer.alpha = 1},
-                                           completion: nil)
-            })
-            self.finalImage = nil
-            NotificationCenter.default.removeObserver(self, name: .AVCaptureSessionDidStartRunning, object: nil)
-        }
-        startCamera()
+        approveViewEnabled(false)
+        self.finalImage = nil
+        self.startCamera()
     }
-
+    
     @IBAction func shotButtonPressed(_ sender: UIButton) {
-        self.buttonPanelContainer.isUserInteractionEnabled = false
-        self.approveViewContainer.isUserInteractionEnabled = true
-        
-        NotificationCenter.default.addObserver(forName: .AVCaptureSessionDidStopRunning, object: nil, queue: OperationQueue.main) { _ in
-            UIView.animate(withDuration: 0.1, delay: 0.0, options: .curveEaseOut,
-                           animations: {self.buttonPanelContainer.alpha = 0},
-                           completion: { _ in
-                            self.buttonPanelContainer.isHidden = true
-                            self.approveViewContainer.isHidden = false
-                            UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseIn,
-                                           animations: {self.approveViewContainer.alpha = 1},
-                                           completion: nil)
-            })
-            NotificationCenter.default.removeObserver(self, name: .AVCaptureSessionDidStopRunning, object: nil)
-        }
+        approveViewEnabled(true)
         
         guard let imageOutput = imageOutput else {
             
@@ -311,12 +307,24 @@ final class FSCameraView: UIView, UIGestureRecognizerDelegate {
                 let finalImage = UIImage(cgImage: img, scale: 1.0, orientation: image.imageOrientation)
                 this.finalImage = this.circularImage ? finalImage.circleMasked : finalImage
                 
+                UIView.animate(withDuration: 0.1, delay: 0.0, options: .curveEaseOut,
+                               animations: {this.buttonPanelContainer.alpha = 0},
+                               completion: { _ in
+                                this.buttonPanelContainer.isHidden = true
+                                this.approveViewContainer.isHidden = false
+                                UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseIn,
+                                               animations: {this.approveViewContainer.alpha = 1},
+                                               completion: nil)
+                })
+                
             }
         })
         
     }
     
     @IBAction func flipButtonPressed(_ sender: UIButton) {
+        
+        
 
         if !cameraIsAvailable { return }
         

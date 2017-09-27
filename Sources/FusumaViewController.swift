@@ -126,6 +126,8 @@ final class FusumaShared {
     public var fusumaUseCameraRollImageTitle = "USE IMAGE"
     public var fusumaTitleFont       = UIFont(name: "AvenirNext-DemiBold", size: 15)
     public var fusumaTabFont         = UIFont(name: "AvenirNext-DemiBold", size: 15)
+    public var fusumaCameraDirection = AVCaptureDevicePosition.back
+    public var fusumaStatusBarHidden = false
 }
 
 
@@ -164,7 +166,9 @@ final class FusumaShared {
     public var fusumaUseCameraRollImageTitle = FusumaShared.shared.fusumaUseCameraRollImageTitle { willSet { FusumaShared.shared.fusumaUseCameraRollImageTitle = newValue } }
     public var fusumaTitleFont       = FusumaShared.shared.fusumaTitleFont { willSet { FusumaShared.shared.fusumaTitleFont = newValue } }
     public var fusumaTabFont         = FusumaShared.shared.fusumaTabFont { willSet { FusumaShared.shared.fusumaTabFont = newValue } }
-    
+    public var fusumaCameraDirection = FusumaShared.shared.fusumaCameraDirection { willSet { FusumaShared.shared.fusumaCameraDirection = newValue } }
+    public var fusumaStatusBarHidden = FusumaShared.shared.fusumaStatusBarHidden { willSet { FusumaShared.shared.fusumaStatusBarHidden = newValue } }
+
     fileprivate var mode: FusumaMode = .library
     
     public var availableModes: [FusumaMode] = [.library, .camera]
@@ -401,7 +405,11 @@ final class FusumaShared {
 
     override public var prefersStatusBarHidden : Bool {
         
-        return true
+        return FusumaShared.shared.fusumaStatusBarHidden
+    }
+    
+    override public var preferredStatusBarStyle : UIStatusBarStyle {
+        return .lightContent
     }
     
     @IBAction func closeButtonPressed(_ sender: Any) {

@@ -22,11 +22,6 @@ class ViewController: UIViewController, FusumaDelegate {
         showButton.layer.cornerRadius = 2.0
         self.fileUrlLabel.text = ""
     }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        
-        
-    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -52,6 +47,7 @@ class ViewController: UIViewController, FusumaDelegate {
         fusuma.fusumaTintColor = UIColor(red: 255, green: 255, blue: 255, alpha: 1)
         fusuma.fusumaBackgroundColor = UIColor.black
         fusuma.fusumaSavesImage = false
+        fusuma.fusumaCameraDirection = .front
         
         self.present(fusuma, animated: true, completion: nil)
     }
