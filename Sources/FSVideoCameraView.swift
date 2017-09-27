@@ -45,7 +45,7 @@ final class FSVideoCameraView: UIView {
         
         if session != nil { return }
         
-        self.backgroundColor = fusumaBackgroundColor
+        self.backgroundColor = FusumaShared.shared.fusumaBackgroundColor
         
         self.isHidden = false
         
@@ -102,15 +102,15 @@ final class FSVideoCameraView: UIView {
         
         let bundle = Bundle(for: self.classForCoder)
         
-        flashOnImage = fusumaFlashOnImage != nil ? fusumaFlashOnImage : UIImage(named: "ic_flash_on", in: bundle, compatibleWith: nil)
-        flashOffImage = fusumaFlashOffImage != nil ? fusumaFlashOffImage : UIImage(named: "ic_flash_off", in: bundle, compatibleWith: nil)
-        let flipImage = fusumaFlipImage != nil ? fusumaFlipImage : UIImage(named: "ic_loop", in: bundle, compatibleWith: nil)
-        videoStartImage = fusumaVideoStartImage != nil ? fusumaVideoStartImage : UIImage(named: "ic_shutter", in: bundle, compatibleWith: nil)
-        videoStopImage = fusumaVideoStopImage != nil ? fusumaVideoStopImage : UIImage(named: "ic_shutter_recording", in: bundle, compatibleWith: nil)
+        flashOnImage = FusumaShared.shared.fusumaFlashOnImage != nil ? FusumaShared.shared.fusumaFlashOnImage : UIImage(named: "ic_flash_on", in: bundle, compatibleWith: nil)
+        flashOffImage = FusumaShared.shared.fusumaFlashOffImage != nil ? FusumaShared.shared.fusumaFlashOffImage : UIImage(named: "ic_flash_off", in: bundle, compatibleWith: nil)
+        let flipImage = FusumaShared.shared.fusumaFlipImage != nil ? FusumaShared.shared.fusumaFlipImage : UIImage(named: "ic_loop", in: bundle, compatibleWith: nil)
+        videoStartImage = FusumaShared.shared.fusumaVideoStartImage != nil ? FusumaShared.shared.fusumaVideoStartImage : UIImage(named: "ic_shutter", in: bundle, compatibleWith: nil)
+        videoStopImage = FusumaShared.shared.fusumaVideoStopImage != nil ? FusumaShared.shared.fusumaVideoStopImage : UIImage(named: "ic_shutter_recording", in: bundle, compatibleWith: nil)
         
-        flashButton.tintColor = fusumaBaseTintColor
-        flipButton.tintColor  = fusumaBaseTintColor
-        shotButton.tintColor  = fusumaBaseTintColor
+        flashButton.tintColor = FusumaShared.shared.fusumaBaseTintColor
+        flipButton.tintColor  = FusumaShared.shared.fusumaBaseTintColor
+        shotButton.tintColor  = FusumaShared.shared.fusumaBaseTintColor
         
         flashButton.setImage(flashOffImage?.withRenderingMode(.alwaysTemplate), for: .normal)
         flipButton.setImage(flipImage?.withRenderingMode(.alwaysTemplate), for: .normal)

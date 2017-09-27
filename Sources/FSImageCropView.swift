@@ -31,7 +31,7 @@ final class FSImageCropView: UIScrollView, UIScrollViewDelegate {
                 return
             }
 
-            if !fusumaCropImage {
+            if !FusumaShared.shared.fusumaCropImage {
                 // Disable scroll view and set image to fit in view
                 imageView.frame = self.frame
                 imageView.contentMode = .scaleAspectFit
@@ -77,7 +77,7 @@ final class FSImageCropView: UIScrollView, UIScrollViewDelegate {
         
         super.init(coder: aDecoder)!
         
-        self.backgroundColor = fusumaBackgroundColor
+        self.backgroundColor = FusumaShared.shared.fusumaBackgroundColor
         self.frame.size      = CGSize.zero
         self.clipsToBounds   = true
         self.imageView.alpha = 0.0

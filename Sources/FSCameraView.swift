@@ -57,18 +57,18 @@ final class FSCameraView: UIView, UIGestureRecognizerDelegate {
         
         if session != nil { return }
         
-        self.backgroundColor = fusumaBackgroundColor
+        self.backgroundColor = FusumaShared.shared.fusumaBackgroundColor
         
         let bundle = Bundle(for: self.classForCoder)
         
-        flashOnImage = fusumaFlashOnImage != nil ? fusumaFlashOnImage : UIImage(named: "ic_flash_on", in: bundle, compatibleWith: nil)
-        flashOffImage = fusumaFlashOffImage != nil ? fusumaFlashOffImage : UIImage(named: "ic_flash_off", in: bundle, compatibleWith: nil)
-        let flipImage = fusumaFlipImage != nil ? fusumaFlipImage : UIImage(named: "ic_loop", in: bundle, compatibleWith: nil)
-        let shotImage = fusumaShotImage != nil ? fusumaShotImage : UIImage(named: "ic_shutter", in: bundle, compatibleWith: nil)
+        flashOnImage = FusumaShared.shared.fusumaFlashOnImage != nil ? FusumaShared.shared.fusumaFlashOnImage : UIImage(named: "ic_flash_on", in: bundle, compatibleWith: nil)
+        flashOffImage = FusumaShared.shared.fusumaFlashOffImage != nil ? FusumaShared.shared.fusumaFlashOffImage : UIImage(named: "ic_flash_off", in: bundle, compatibleWith: nil)
+        let flipImage = FusumaShared.shared.fusumaFlipImage != nil ? FusumaShared.shared.fusumaFlipImage : UIImage(named: "ic_loop", in: bundle, compatibleWith: nil)
+        let shotImage = FusumaShared.shared.fusumaShotImage != nil ? FusumaShared.shared.fusumaShotImage : UIImage(named: "ic_shutter", in: bundle, compatibleWith: nil)
         
-        flashButton.tintColor = (flipTint != nil) ? flipTint : fusumaBaseTintColor
-        flipButton.tintColor  = (flashTint != nil) ? flashTint : fusumaBaseTintColor
-        shotButton.tintColor  = (triggerTint != nil) ? triggerTint : fusumaBaseTintColor
+        flashButton.tintColor = (flipTint != nil) ? flipTint : FusumaShared.shared.fusumaBaseTintColor
+        flipButton.tintColor  = (flashTint != nil) ? flashTint : FusumaShared.shared.fusumaBaseTintColor
+        shotButton.tintColor  = (triggerTint != nil) ? triggerTint : FusumaShared.shared.fusumaBaseTintColor
     
         flashButton.setImage(flashOffImage?.withRenderingMode(.alwaysTemplate), for: .normal)
         flipButton.setImage(flipImage?.withRenderingMode(.alwaysTemplate), for: .normal)
@@ -219,7 +219,7 @@ final class FSCameraView: UIView, UIGestureRecognizerDelegate {
             }
             this.delegate?.cameraShotFinished(croppedUIImage)
             
-            if fusumaSavesImage {
+            if FusumaShared.shared.fusumaSavesImage {
                 
                 this.saveImageToCameraRoll(image: croppedUIImage)
             }
@@ -444,7 +444,7 @@ fileprivate extension FSCameraView {
         focusView.alpha = 0.0
         focusView.center = point
         focusView.backgroundColor = UIColor.clear
-        focusView.layer.borderColor = fusumaBaseTintColor.cgColor
+        focusView.layer.borderColor = FusumaShared.shared.fusumaBaseTintColor.cgColor
         focusView.layer.borderWidth = 1.0
         focusView.transform = CGAffineTransform(scaleX: 1.0, y: 1.0)
         addSubview(focusView)

@@ -36,14 +36,14 @@ public protocol FusumaDelegate: class {
     func fusumaImageSelected(_ image: UIImage, source: FusumaMode)
     func fusumaMultipleImageSelected(_ images: [UIImage], source: FusumaMode)
     func fusumaVideoCompleted(withFileURL fileURL: URL)
-    func fusumaCameraRollUnauthorized(_ fusumaViewController: FusumaViewController)
-    func fusumaCameraUnauthorized(_ fusumaViewController: FusumaViewController)
     
     // optional
     func fusumaImageSelected(_ image: UIImage, source: FusumaMode, metaData: ImageMetadata)
     func fusumaDismissedWithImage(_ image: UIImage, source: FusumaMode)
     func fusumaClosed()
     func fusumaWillClosed()
+    func fusumaCameraRollUnauthorized(_ fusumaViewController: FusumaViewController)
+    func fusumaCameraUnauthorized(_ fusumaViewController: FusumaViewController)
 }
 
 public extension FusumaDelegate {
@@ -52,8 +52,9 @@ public extension FusumaDelegate {
     func fusumaDismissedWithImage(_ image: UIImage, source: FusumaMode) {}
     func fusumaClosed() {}
     func fusumaWillClosed() {}
+    func fusumaCameraRollUnauthorized(_ fusumaViewController: FusumaViewController) {}
+    func fusumaCameraUnauthorized(_ fusumaViewController: FusumaViewController) {}
 }
-
 
 @objc public enum FusumaMode: Int {
     
@@ -80,18 +81,28 @@ public struct ImageMetadata {
     public let asset: PHAsset
 }
 
-@objc public class FusumaViewController: UIViewController {
+// MARK: - Singleton
 
+final class FusumaShared {
+    
+    // Can't init is singleton
+    private init() { }
+    
+    // MARK: Shared Instance
+    
+    static let shared = FusumaShared()
+    
+    // MARK: Local Variable
+    public var fusumaCropImage: Bool  = true
+    public var fusumaBackgroundColor = UIColor.hex("#FCFCFC", alpha: 1.0)
     public var cropHeightRatio: CGFloat = 1
     public var allowMultipleSelection: Bool = false
     public var shouldDisplayTopBar = false
     public var topBarTintColor = UIColor.white
     public var topBarCloseButtonFont = UIFont(name: "Farah", size: 13)
-    
     public var fusumaBaseTintColor   = UIColor.hex("#c9c7c8", alpha: 1.0)
     public var fusumaTintColor       = UIColor.hex("#424141", alpha: 1.0)
     public var fusumaTriggerTintColor : UIColor?
-    public var fusumaBackgroundColor = UIColor.hex("#FCFCFC", alpha: 1.0)
     
     public var fusumaCheckImage: UIImage?
     public var fusumaCloseImage: UIImage?
@@ -103,7 +114,6 @@ public struct ImageMetadata {
     public var fusumaVideoStartImage: UIImage?
     public var fusumaVideoStopImage: UIImage?
     
-    public var fusumaCropImage: Bool  = true
     public var fusumaSavesImage: Bool = false
     public var fusumaCircularImage: Bool  = false
     public var fusumaShouldAddSpaceForStatusBar = false
@@ -116,6 +126,44 @@ public struct ImageMetadata {
     public var fusumaUseCameraRollImageTitle = "USE IMAGE"
     public var fusumaTitleFont       = UIFont(name: "AvenirNext-DemiBold", size: 15)
     public var fusumaTabFont         = UIFont(name: "AvenirNext-DemiBold", size: 15)
+}
+
+
+@objc public class FusumaViewController: UIViewController {
+
+    public var fusumaCropImage = FusumaShared.shared.fusumaCropImage { willSet { FusumaShared.shared.fusumaCropImage = newValue } }
+    public var fusumaBackgroundColor = FusumaShared.shared.fusumaBackgroundColor { willSet { FusumaShared.shared.fusumaBackgroundColor = newValue } }
+    public var cropHeightRatio = FusumaShared.shared.cropHeightRatio { willSet { FusumaShared.shared.cropHeightRatio = newValue } }
+    public var allowMultipleSelection = FusumaShared.shared.allowMultipleSelection { willSet { FusumaShared.shared.allowMultipleSelection = newValue } }
+    public var shouldDisplayTopBar = FusumaShared.shared.shouldDisplayTopBar { willSet { FusumaShared.shared.shouldDisplayTopBar = newValue } }
+    public var topBarTintColor = FusumaShared.shared.topBarTintColor { willSet { FusumaShared.shared.topBarTintColor = newValue } }
+    public var topBarCloseButtonFont = FusumaShared.shared.topBarCloseButtonFont { willSet { FusumaShared.shared.topBarCloseButtonFont = newValue } }
+    public var fusumaBaseTintColor   = FusumaShared.shared.fusumaBaseTintColor { willSet { FusumaShared.shared.fusumaBaseTintColor = newValue } }
+    public var fusumaTintColor       = FusumaShared.shared.fusumaTintColor { willSet { FusumaShared.shared.fusumaTintColor = newValue } }
+    public var fusumaTriggerTintColor = FusumaShared.shared.fusumaTriggerTintColor { willSet { FusumaShared.shared.fusumaTriggerTintColor = newValue } }
+    
+    public var fusumaCheckImage = FusumaShared.shared.fusumaCheckImage { willSet { FusumaShared.shared.fusumaCheckImage = newValue } }
+    public var fusumaCloseImage = FusumaShared.shared.fusumaCloseImage { willSet { FusumaShared.shared.fusumaCloseImage = newValue } }
+    public var fusumaFlashOnImage = FusumaShared.shared.fusumaFlashOnImage { willSet { FusumaShared.shared.fusumaFlashOnImage = newValue } }
+    public var fusumaFlashOffImage = FusumaShared.shared.fusumaFlashOffImage { willSet { FusumaShared.shared.fusumaFlashOffImage = newValue } }
+    public var fusumaFlipImage = FusumaShared.shared.fusumaFlipImage { willSet { FusumaShared.shared.fusumaFlipImage = newValue } }
+    public var fusumaShotImage = FusumaShared.shared.fusumaShotImage { willSet { FusumaShared.shared.fusumaShotImage = newValue } }
+    
+    public var fusumaVideoStartImage = FusumaShared.shared.fusumaVideoStartImage { willSet { FusumaShared.shared.fusumaVideoStartImage = newValue } }
+    public var fusumaVideoStopImage = FusumaShared.shared.fusumaVideoStopImage { willSet { FusumaShared.shared.fusumaVideoStopImage = newValue } }
+    
+    public var fusumaSavesImage = FusumaShared.shared.fusumaSavesImage { willSet { FusumaShared.shared.fusumaSavesImage = newValue } }
+    public var fusumaCircularImage = FusumaShared.shared.fusumaCircularImage { willSet { FusumaShared.shared.fusumaCircularImage = newValue } }
+    public var fusumaShouldAddSpaceForStatusBar = FusumaShared.shared.fusumaShouldAddSpaceForStatusBar { willSet { FusumaShared.shared.fusumaShouldAddSpaceForStatusBar = newValue } }
+    
+    public var fusumaCameraRollTitle = FusumaShared.shared.fusumaCameraRollTitle { willSet { FusumaShared.shared.fusumaCameraRollTitle = newValue } }
+    public var fusumaCameraTitle     = FusumaShared.shared.fusumaCameraTitle { willSet { FusumaShared.shared.fusumaCameraTitle = newValue } }
+    public var fusumaVideoTitle      = FusumaShared.shared.fusumaVideoTitle { willSet { FusumaShared.shared.fusumaVideoTitle = newValue } }
+    public var fusumaCloseTitle      = FusumaShared.shared.fusumaCloseTitle { willSet { FusumaShared.shared.fusumaCloseTitle = newValue } }
+    public var fusaumaTitle         = FusumaShared.shared.fusaumaTitle { willSet { FusumaShared.shared.fusaumaTitle = newValue } }
+    public var fusumaUseCameraRollImageTitle = FusumaShared.shared.fusumaUseCameraRollImageTitle { willSet { FusumaShared.shared.fusumaUseCameraRollImageTitle = newValue } }
+    public var fusumaTitleFont       = FusumaShared.shared.fusumaTitleFont { willSet { FusumaShared.shared.fusumaTitleFont = newValue } }
+    public var fusumaTabFont         = FusumaShared.shared.fusumaTabFont { willSet { FusumaShared.shared.fusumaTabFont = newValue } }
     
     fileprivate var mode: FusumaMode = .library
     
@@ -156,7 +204,7 @@ public struct ImageMetadata {
     override public func viewDidLoad() {
         super.viewDidLoad()
     
-        self.view.backgroundColor = fusumaBackgroundColor
+        self.view.backgroundColor = FusumaShared.shared.fusumaBackgroundColor
         
         cameraView.delegate = self
         albumView.delegate  = self
@@ -293,7 +341,7 @@ public struct ImageMetadata {
             return
         }
         
-        if fusumaCropImage {
+        if FusumaShared.shared.fusumaCropImage {
             
             let heightRatio = getCropHeightRatio()
             
@@ -380,7 +428,7 @@ public struct ImageMetadata {
         
         guard let view = albumView.imageCropView else { return }
         
-        if fusumaCropImage {
+        if FusumaShared.shared.fusumaCropImage {
             
             let normalizedX = view.contentOffset.x / view.contentSize.width
             let normalizedY = view.contentOffset.y / view.contentSize.height
@@ -451,7 +499,7 @@ public struct ImageMetadata {
                 guard let result = result else { return }
                     
                 DispatchQueue.main.async(execute: {
-                    let finalImage = fusumaCircularImage ? result.circleMasked : result
+                    let finalImage = self.fusumaCircularImage ? result.circleMasked : result
                     completion(asset, finalImage)
                 })
             }

@@ -98,7 +98,7 @@ final class FSAlbumView: UIView, UICollectionViewDataSource, UICollectionViewDel
         dragDirection = Direction.up
         
         collectionView.register(UINib(nibName: "FSAlbumViewCell", bundle: Bundle(for: self.classForCoder)), forCellWithReuseIdentifier: "FSAlbumViewCell")
-		collectionView.backgroundColor = fusumaBackgroundColor
+		collectionView.backgroundColor = FusumaShared.shared.fusumaBackgroundColor
         collectionView.allowsMultipleSelection = allowMultipleSelection
         
         // adding circle
