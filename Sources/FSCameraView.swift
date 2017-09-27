@@ -39,6 +39,7 @@ final class FSCameraView: UIView, UIGestureRecognizerDelegate {
     fileprivate var imageOutput: AVCaptureStillImageOutput?
     fileprivate var videoLayer: AVCaptureVideoPreviewLayer?
     fileprivate var finalImage: UIImage?
+    fileprivate var pureFinalImage: UIImage?
 
     fileprivate var focusView: UIView?
 
@@ -222,7 +223,7 @@ final class FSCameraView: UIView, UIGestureRecognizerDelegate {
     @IBOutlet weak var UseImageThatWasTakenButton: UIButton!
     @IBAction func UseImageThatWasTakeWithCamera(_ sender: Any) {
         
-        guard let croppedUIImage = self.finalImage else {
+        guard let croppedUIImage = FusumaShared.shared.fusumaReturnSqareImage ? self.pureFinalImage : self.finalImage else {
             print("there was no image to set for the delegate")
             return
         }
@@ -305,6 +306,7 @@ final class FSCameraView: UIView, UIGestureRecognizerDelegate {
                     return
                 }
                 let finalImage = UIImage(cgImage: img, scale: 1.0, orientation: image.imageOrientation)
+                this.pureFinalImage = finalImage
                 this.finalImage = this.circularImage ? finalImage.circleMasked : finalImage
                 
                 UIView.animate(withDuration: 0.1, delay: 0.0, options: .curveEaseOut,

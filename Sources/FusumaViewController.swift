@@ -130,6 +130,7 @@ final class FusumaShared {
     public var fusumaTabFont         = UIFont(name: "AvenirNext-DemiBold", size: 15)
     public var fusumaCameraDirection = AVCaptureDevicePosition.back
     public var fusumaStatusBarHidden = false
+    public var fusumaReturnSqareImage = true
 }
 
 
@@ -170,6 +171,7 @@ final class FusumaShared {
     public var fusumaTabFont         = FusumaShared.shared.fusumaTabFont { willSet { FusumaShared.shared.fusumaTabFont = newValue } }
     public var fusumaCameraDirection = FusumaShared.shared.fusumaCameraDirection { willSet { FusumaShared.shared.fusumaCameraDirection = newValue } }
     public var fusumaStatusBarHidden = FusumaShared.shared.fusumaStatusBarHidden { willSet { FusumaShared.shared.fusumaStatusBarHidden = newValue } }
+    public var fusumaReturnSqareImage = FusumaShared.shared.fusumaReturnSqareImage { willSet { FusumaShared.shared.fusumaReturnSqareImage = newValue } }
 
     fileprivate var mode: FusumaMode = .library
     
@@ -509,7 +511,7 @@ final class FusumaShared {
                 guard let result = result else { return }
                     
                 DispatchQueue.main.async(execute: {
-                    let finalImage = self.fusumaCircularImage ? result.circleMasked : result
+                    let finalImage = FusumaShared.shared.fusumaReturnSqareImage ? result : result.circleMasked
                     completion(asset, finalImage)
                 })
             }
