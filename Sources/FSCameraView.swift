@@ -24,8 +24,6 @@ final class FSCameraView: UIView, UIGestureRecognizerDelegate {
     @IBOutlet weak var shotButton: UIButton!
     @IBOutlet weak var flashButton: UIButton!
     @IBOutlet weak var flipButton: UIButton!
-    @IBOutlet weak var fullAspectRatioConstraint: NSLayoutConstraint!
-    var croppedAspectRatioConstraint: NSLayoutConstraint?
     
     weak var delegate: FSCameraViewDelegate? = nil
     var circularImage: Bool  = false
@@ -47,7 +45,25 @@ final class FSCameraView: UIView, UIGestureRecognizerDelegate {
     fileprivate var flashOnImage: UIImage?
     
     fileprivate var motionManager: CMMotionManager?
-    fileprivate var currentDeviceOrientation: UIDeviceOrientation?
+    fileprivate var currentDeviceOrientation: UIDeviceOrientation? {
+        didSet {
+            guard let orientation = currentDeviceOrientation else {
+                return
+            }
+            
+            guard let connection = imageOutput?.connections.first as? AVCaptureConnection else {
+                return
+            }
+            
+            switch orientation {
+            case .portrait: connection.videoOrientation = AVCaptureVideoOrientation.portrait
+            case .portraitUpsideDown: connection.videoOrientation = AVCaptureVideoOrientation.portraitUpsideDown
+            case .landscapeRight: connection.videoOrientation = AVCaptureVideoOrientation.landscapeLeft
+            case .landscapeLeft: connection.videoOrientation = AVCaptureVideoOrientation.landscapeRight
+            case .faceDown, .faceUp, .unknown: connection.videoOrientation = AVCaptureVideoOrientation.portrait
+            }
+        }
+    }
     
     static func instance() -> FSCameraView {
         
@@ -305,6 +321,8 @@ final class FSCameraView: UIView, UIGestureRecognizerDelegate {
                     
                     return
                 }
+                print("imageOrientation:\(image.imageOrientation.rawValue)")
+                
                 let finalImage = UIImage(cgImage: img, scale: 1.0, orientation: image.imageOrientation)
                 this.pureFinalImage = finalImage
                 this.finalImage = this.circularImage ? finalImage.circleMasked : finalImage
