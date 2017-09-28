@@ -111,6 +111,8 @@ final class FSCameraView: UIView, UIGestureRecognizerDelegate {
                     
                     flashButton.isHidden = true
                 }
+                
+                self.flashButton.isHidden = FusumaShared.shared.fusumaCameraDirection == .front
             }
         }
         
@@ -343,7 +345,7 @@ final class FSCameraView: UIView, UIGestureRecognizerDelegate {
     }
     
     @IBAction func flipButtonPressed(_ sender: UIButton) {
-        
+
         
 
         if !cameraIsAvailable { return }
@@ -362,6 +364,8 @@ final class FSCameraView: UIView, UIGestureRecognizerDelegate {
                 }
 
                 let position = (videoInput?.device.position == AVCaptureDevicePosition.front) ? AVCaptureDevicePosition.back : AVCaptureDevicePosition.front
+                
+                self.flashButton.isHidden = position == .front
 
                 for device in AVCaptureDevice.devices(withMediaType: AVMediaTypeVideo) {
 
