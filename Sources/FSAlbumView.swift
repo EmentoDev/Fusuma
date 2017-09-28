@@ -223,7 +223,7 @@ final class FSAlbumView: UIView, UICollectionViewDataSource, UICollectionViewDel
         
         return true
     }
-    
+   
     func panned(_ sender: UITapGestureRecognizer) {
         
         if sender.state == UIGestureRecognizerState.began {
@@ -334,7 +334,7 @@ final class FSAlbumView: UIView, UICollectionViewDataSource, UICollectionViewDel
                 
                 // Get back to the original position
                 imageCropView.changeScrollable(true)
-                
+
                 imageCropViewConstraintTop.constant = imageCropViewOriginalConstraintTop
                 collectionViewConstraintHeight.constant = self.frame.height - imageCropViewOriginalConstraintTop - imageCropViewContainer.frame.height
                 

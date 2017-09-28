@@ -108,10 +108,12 @@ final class FSImageCropView: UIScrollView, UIScrollViewDelegate {
 
     }
     
+    var previousImageViewFrame: CGRect?
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
         
         let boundsSize = scrollView.bounds.size
         var contentsFrame = imageView.frame
+        previousImageViewFrame = imageView.frame
         
         if contentsFrame.size.width < boundsSize.width {
             
@@ -135,7 +137,42 @@ final class FSImageCropView: UIScrollView, UIScrollViewDelegate {
     
     func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
         
-        self.contentSize = CGSize(width: imageView.frame.width + 1, height: imageView.frame.height + 1)
+        guard let previousFrame = previousImageViewFrame else {
+            print("could not retrive previous state for imageview")
+            return
+        }
+        
+        if imageView.frame.width>imageView.frame.height {
+            //landscape
+            if(imageView.frame.height<scrollView.bounds.height){
+                UIView.animate(withDuration: 0.3,
+                               delay: 0.0,
+                               options: UIViewAnimationOptions.curveEaseOut,
+                               animations: {
+                                self.contentSize = CGSize(width: previousFrame.width + 1, height: previousFrame.height + 1)
+                                scrollView.setZoomScale(1.0, animated: false)
+                                self.layoutIfNeeded()
+                                
+                }, completion: nil)
+                
+            }
+        } else if(imageView.frame.width<scrollView.bounds.height){
+            //portrait
+            if(imageView.frame.width<scrollView.bounds.width){
+                UIView.animate(withDuration: 0.3,
+                               delay: 0.0,
+                               options: UIViewAnimationOptions.curveEaseOut,
+                               animations: {
+                                self.contentSize = CGSize(width: previousFrame.width + 1, height: previousFrame.height + 1)
+                                scrollView.setZoomScale(1.0, animated: false)
+                                self.layoutIfNeeded()
+                                
+                }, completion: nil)
+            }
+        } else {
+            self.contentSize = CGSize(width: imageView.frame.width + 1, height: imageView.frame.height + 1)
+        }
+        
     }
     
 }
