@@ -35,7 +35,7 @@ final class FSAlbumView: UIView, UICollectionViewDataSource, UICollectionViewDel
     var canPanDuringThisTouch = true
     
     fileprivate var images: PHFetchResult<PHAsset>!
-    fileprivate var imageManager: PHCachingImageManager?
+    var imageManager: PHCachingImageManager?
     fileprivate var previousPreheatRect: CGRect = .zero
     fileprivate let cellSize = CGSize(width: 100, height: 100)
     
@@ -43,6 +43,7 @@ final class FSAlbumView: UIView, UICollectionViewDataSource, UICollectionViewDel
     
     var selectedImages: [UIImage] = []
     var selectedAssets: [PHAsset] = []
+    var fallBackImageIfPHAssetsFails: UIImage?
     
     // Variables for calculating the position
     enum Direction {
@@ -59,6 +60,7 @@ final class FSAlbumView: UIView, UICollectionViewDataSource, UICollectionViewDel
     private var imaginaryCollectionViewOffsetStartPosY: CGFloat = 0.0
     
     private var initialized = false
+    private var fillLayer: CAShapeLayer?
     
     private var cropBottomY: CGFloat  = 0.0
     private var dragStartPos: CGPoint = CGPoint.zero
@@ -103,18 +105,7 @@ final class FSAlbumView: UIView, UICollectionViewDataSource, UICollectionViewDel
         
         // adding circle
         if (circularImage) {
-            let radius = imageCropViewContainer.frame.size.width
-            let path = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: imageCropViewContainer.bounds.size.width, height: imageCropViewContainer.bounds.size.height), cornerRadius: 0)
-            let circlePath = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: radius, height: radius), cornerRadius: radius/2)
-            path.append(circlePath)
-            path.usesEvenOddFillRule = true
-            
-            let fillLayer = CAShapeLayer()
-            fillLayer.path = path.cgPath
-            fillLayer.fillRule = kCAFillRuleEvenOdd
-            fillLayer.fillColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5).cgColor
-            fillLayer.opacity = 0.5
-            imageCropViewContainer.layer.addSublayer(fillLayer)
+            circleIsHidden(false)
         }
         
         
@@ -142,6 +133,26 @@ final class FSAlbumView: UIView, UICollectionViewDataSource, UICollectionViewDel
         performCheckPhotoAuth(shouldInitialize: true)
         
         NotificationCenter.default.addObserver(self, selector: #selector(FSAlbumView.checkIfNewIMagesHasAppeared(_:)), name: NSNotification.Name.UIApplicationWillEnterForeground, object: nil)
+    }
+    
+    func circleIsHidden(_ enabled:Bool) {
+        if let fillLayer = self.fillLayer {
+            fillLayer.isHidden = enabled
+        } else {
+            let radius = imageCropViewContainer.frame.size.width
+            let path = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: imageCropViewContainer.bounds.size.width, height: imageCropViewContainer.bounds.size.height), cornerRadius: 0)
+            let circlePath = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: radius, height: radius), cornerRadius: radius/2)
+            path.append(circlePath)
+            path.usesEvenOddFillRule = true
+            let fillLayer = CAShapeLayer()
+            fillLayer.path = path.cgPath
+            fillLayer.fillRule = kCAFillRuleEvenOdd
+            fillLayer.fillColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.5).cgColor
+            fillLayer.opacity = 0.5
+            fillLayer.isHidden=enabled
+            self.fillLayer = fillLayer
+            imageCropViewContainer.layer.addSublayer(fillLayer)
+        }
     }
     
     func checkIfNewIMagesHasAppeared(_ notification: Notification){
@@ -173,7 +184,7 @@ final class FSAlbumView: UIView, UICollectionViewDataSource, UICollectionViewDel
             PHPhotoLibrary.shared().unregisterChangeObserver(self)
         }
     }
- 
+    
     func resetView() {
         collectionViewConstraintHeight.constant = self.frame.height - imageCropViewContainer.frame.height - imageCropViewOriginalConstraintTop
         imageCropViewConstraintTop.constant = 0
@@ -222,7 +233,35 @@ final class FSAlbumView: UIView, UICollectionViewDataSource, UICollectionViewDel
     }
     
     @IBAction func userApprovedImageButtonPressed(_ sender: Any) {
+        
+        guard let scrollViewSuperView = imageCropView.superview else {
+            print("unable to find scrollviews superview")
+            return
+        }
+        
+        if(!FusumaShared.shared.fusumaCropImage) {
+            print("unable to find fusumaCropImage")
+            return
+        }
+        
+        
+        UIGraphicsBeginImageContextWithOptions(scrollViewSuperView.frame.size, false, UIScreen.main.scale)
+        guard let context = UIGraphicsGetCurrentContext() else {
+            print("UIGraphics lost the context")
+            return
+        }
+        
+        self.circleIsHidden(true)
+        
+        scrollViewSuperView.layer.render(in: context)
+        let newImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        self.circleIsHidden(false)
+        
+        self.fallBackImageIfPHAssetsFails = newImage
         self.delegate?.albumViewCameraRollFinished()
+        
     }
     
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
@@ -547,7 +586,6 @@ private extension FSAlbumView {
             
             let options = PHImageRequestOptions()
             options.isNetworkAccessAllowed = true
-            
             self.imageManager?.requestImage(for: asset,
                 targetSize: CGSize(width: asset.pixelWidth, height: asset.pixelHeight),
                 contentMode: .aspectFill,

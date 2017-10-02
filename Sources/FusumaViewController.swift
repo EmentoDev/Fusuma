@@ -33,10 +33,10 @@ fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
 
 public protocol FusumaDelegate: class {
     
-    func fusumaImageSelected(_ image: UIImage, source: FusumaMode)
+    func fusumaImageSelected(_ image: UIImage, source: FusumaMode?)
     
     // optional
-    func fusumaImageSelected(_ image: UIImage, source: FusumaMode, metaData: ImageMetadata)
+    func fusumaImageSelected(_ image: UIImage, source: FusumaMode, metaData: ImageMetadata?)
     func fusumaDismissedWithImage(_ image: UIImage, source: FusumaMode)
     func fusumaClosed()
     func fusumaWillClosed()
@@ -48,7 +48,7 @@ public protocol FusumaDelegate: class {
 
 public extension FusumaDelegate {
     
-    func fusumaImageSelected(_ image: UIImage, source: FusumaMode, metaData: ImageMetadata) {}
+    func fusumaImageSelected(_ image: UIImage, source: FusumaMode, metaData: ImageMetadata?) {}
     func fusumaDismissedWithImage(_ image: UIImage, source: FusumaMode) {}
     func fusumaClosed() {}
     func fusumaWillClosed() {}
@@ -454,8 +454,7 @@ final class FusumaShared {
             
             let cropRect = CGRect(x: normalizedX, y: normalizedY,
                                   width: normalizedWidth, height: normalizedHeight)
-            
-            requestImage(with: self.albumView.phAsset, cropRect: cropRect) { (asset, image) in
+            requestImage(with: self.albumView.phAsset, cropRect: cropRect, completion: { (asset, image) in
                 
                 self.delegate?.fusumaImageSelected(image, source: self.mode)
                 
@@ -477,7 +476,26 @@ final class FusumaShared {
                     asset: self.albumView.phAsset)
                 
                 self.delegate?.fusumaImageSelected(image, source: self.mode, metaData: metaData)
-            }
+            }, failure: {
+                //trying to get image from scrollview instead of actual assets
+                guard let image = self.albumView.fallBackImageIfPHAssetsFails else {
+                    print("tried to get image from scrollview, but it was not available .. unable to retrieve image")
+                    let alert = UIAlertController(title: "Image dissapeared",
+                                                  message: "The image that was selected from your photo library dissapeared. This might be caused by iCloud synchronization or similar operation. Try restarting your app. If the problem persists, please contact support.",
+                                                  preferredStyle: .alert)
+                    
+                    alert.addAction(UIAlertAction(title: "OK", style: .default) { (action) -> Void in
+                        
+                    })
+                    
+                    self.present(alert, animated: true, completion: nil)
+                    
+                    return
+                }
+                 self.dismiss(animated: true) {
+                    self.delegate?.fusumaImageSelected(image, source: self.mode)
+                }
+            })
             
         } else {
             
@@ -491,7 +509,7 @@ final class FusumaShared {
         }
     }
     
-    private func requestImage(with asset: PHAsset, cropRect: CGRect, completion: @escaping (PHAsset, UIImage) -> Void) {
+    private func requestImage(with asset: PHAsset, cropRect: CGRect, completion: @escaping (PHAsset, UIImage) -> Void, failure: @escaping () -> Void) {
         
         DispatchQueue.global(qos: .default).async(execute: {
             
@@ -512,7 +530,11 @@ final class FusumaShared {
                 for: asset, targetSize: targetSize,
                 contentMode: .aspectFill, options: options) { result, info in
 
-                guard let result = result else { return }
+                guard let result = result else {
+                    print("Unable to fetch image from assets .. maybe image has been deleted meanwhile?")
+                    failure()
+                    return
+                }
                     
                 DispatchQueue.main.async(execute: {
                     let finalImage = FusumaShared.shared.fusumaReturnSqareImage ? result : result.circleMasked
@@ -539,7 +561,7 @@ final class FusumaShared {
         
         for asset in albumView.selectedAssets {
             
-            requestImage(with: asset, cropRect: cropRect) { asset, result in
+            requestImage(with: asset, cropRect: cropRect, completion: { asset, result in
                 
                 images.append(result)
                 
@@ -553,7 +575,9 @@ final class FusumaShared {
                         }
                     }
                 }
-            }
+            }, failure: {
+                print("Unable to fetch multiple images")
+            })
         }
     }
 }
