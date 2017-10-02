@@ -53,9 +53,15 @@ class ViewController: UIViewController, FusumaDelegate {
     }
     
     // MARK: FusumaDelegate Protocol
-    func fusumaImageSelected(_ image: UIImage, source: FusumaMode) {
+    func fusumaImageSelected(_ image: UIImage, source: FusumaMode?) {
         
-        switch source {
+        imageView.image = image
+        
+        guard let src = source else {
+            return
+        }
+        
+        switch src {
             
         case .camera:
             
@@ -69,8 +75,6 @@ class ViewController: UIViewController, FusumaDelegate {
         
             print("Image selected")
         }
-        
-        imageView.image = image
     }
     
     func fusumaMultipleImageSelected(_ images: [UIImage], source: FusumaMode) {
@@ -90,16 +94,23 @@ class ViewController: UIViewController, FusumaDelegate {
         }
     }
 
-    func fusumaImageSelected(_ image: UIImage, source: FusumaMode, metaData: ImageMetadata) {
+    func fusumaImageSelected(_ image: UIImage, source: FusumaMode, metaData: ImageMetadata?) {
         
-        print("Image mediatype: \(metaData.mediaType)")
-        print("Source image size: \(metaData.pixelWidth)x\(metaData.pixelHeight)")
-        print("Creation date: \(String(describing: metaData.creationDate))")
-        print("Modification date: \(String(describing: metaData.modificationDate))")
-        print("Video duration: \(metaData.duration)")
-        print("Is favourite: \(metaData.isFavourite)")
-        print("Is hidden: \(metaData.isHidden)")
-        print("Location: \(String(describing: metaData.location))")
+        imageView.image = image
+        
+        guard let meta = metaData else {
+            return
+        }
+        
+        print("Image mediatype: \(meta.mediaType)")
+        print("Source image size: \(meta.pixelWidth)x\(meta.pixelHeight)")
+        print("Creation date: \(String(describing: meta.creationDate))")
+        print("Modification date: \(String(describing: meta.modificationDate))")
+        print("Video duration: \(meta.duration)")
+        print("Is favourite: \(meta.isFavourite)")
+        print("Is hidden: \(meta.isHidden)")
+        print("Location: \(String(describing: meta.location))")
+        
     }
 
     func fusumaVideoCompleted(withFileURL fileURL: URL) {
