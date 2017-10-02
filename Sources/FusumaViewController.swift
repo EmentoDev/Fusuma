@@ -172,7 +172,9 @@ final class FusumaShared {
     public var fusumaCameraDirection = FusumaShared.shared.fusumaCameraDirection { willSet { FusumaShared.shared.fusumaCameraDirection = newValue } }
     public var fusumaStatusBarHidden = FusumaShared.shared.fusumaStatusBarHidden { willSet { FusumaShared.shared.fusumaStatusBarHidden = newValue } }
     public var fusumaReturnSqareImage = FusumaShared.shared.fusumaReturnSqareImage { willSet { FusumaShared.shared.fusumaReturnSqareImage = newValue } }
-
+    public var fusumaCameraRollImageDisappearedTitle = "Image dissapeared"
+    public var fusumaCameraRollImageDisappearedDescription = "The image that was selected from your photo library disappeared. This might be caused by iCloud synchronization or similar operation. Try restarting your app. If the problem persists, please contact support."
+    
     fileprivate var mode: FusumaMode = .library
     
     public var availableModes: [FusumaMode] = [.library, .camera]
@@ -193,7 +195,7 @@ final class FusumaShared {
     lazy var albumView  = FSAlbumView.instance()
     lazy var cameraView = FSCameraView.instance()
     lazy var videoView  = FSVideoCameraView.instance()
-
+    
     fileprivate var hasGalleryPermission: Bool {
         
         return PHPhotoLibrary.authorizationStatus() == .authorized
@@ -480,8 +482,8 @@ final class FusumaShared {
                 //trying to get image from scrollview instead of actual assets
                 guard let image = self.albumView.fallBackImageIfPHAssetsFails else {
                     print("tried to get image from scrollview, but it was not available .. unable to retrieve image")
-                    let alert = UIAlertController(title: "Image dissapeared",
-                                                  message: "The image that was selected from your photo library dissapeared. This might be caused by iCloud synchronization or similar operation. Try restarting your app. If the problem persists, please contact support.",
+                    let alert = UIAlertController(title: self.fusumaCameraRollImageDisappearedTitle,
+                                                  message: self.fusumaCameraRollImageDisappearedDescription,
                                                   preferredStyle: .alert)
                     
                     alert.addAction(UIAlertAction(title: "OK", style: .default) { (action) -> Void in
