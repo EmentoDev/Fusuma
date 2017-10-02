@@ -174,6 +174,12 @@ final class FSAlbumView: UIView, UICollectionViewDataSource, UICollectionViewDel
         }
     }
  
+    func resetView() {
+        collectionViewConstraintHeight.constant = self.frame.height - imageCropViewContainer.frame.height - imageCropViewOriginalConstraintTop
+        imageCropViewConstraintTop.constant = 0
+        dragDirection = Direction.up
+    }
+ 
     // Check the status of authorization for PHPhotoLibrary
     func performCheckPhotoAuth(shouldInitialize: Bool) {
         

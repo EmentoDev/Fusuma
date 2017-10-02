@@ -428,6 +428,10 @@ final class FusumaShared {
     
     @IBAction func photoButtonPressed(_ sender: UIButton) {
     
+        if(self.mode == .library){
+            //reset scroll on
+            albumView.resetView()
+        }
         changeMode(FusumaMode.camera)
     }
     
